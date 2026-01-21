@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+env.txt
+
+# IDE
+.vscode/
+
+# Static uploads / generated files
+storeg/static/uploads/
+storeg/static/prescription_pdf/
+
+# Poetry
+.venv/

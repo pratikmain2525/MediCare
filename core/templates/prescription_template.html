@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prescription #{{ prescription.consultation_id }}</title>
+    <style>
+        body { font-family: Arial; margin: 30px; line-height: 1.5; }
+        h1, h2 { text-align: center; }
+        .section { margin-bottom: 20px; }
+        .section-title { font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 10px; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 8px; border: 1px solid #ccc; }
+        ul { padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Prescription</h1>
+    <h2>Consultation ID: {{ prescription.consultation_id }}</h2>
+
+    <div class="section">
+        <div class="section-title">Care To Be Taken</div>
+        <p>{{ prescription.care_to_be_taken }}</p>
+    </div>
+
+    {% if prescription.medicines %}
+    <div class="section">
+        <div class="section-title">Medicines</div>
+        <ul>
+            {% for med in prescription.medicines.split("\n") %}
+            <li>{{ med }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="section">
+        <div class="section-title">Patient & Doctor Info</div>
+        <table>
+            <tr><th>Patient Name</th><td>{{ prescription.patient_name }}</td></tr>
+            <tr><th>Doctor Name</th><td>{{ prescription.doctor_name }}</td></tr>
+            <tr><th>Doctor Specialty</th><td>{{ prescription.doctor_specialty }}</td></tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Generated On</div>
+        <p>{{ prescription.generated_on }}</p>
+    </div>
+
+    <footer style="text-align:center; margin-top:50px; font-size:12px;">
+        © MediCare Clinic
+    </footer>
+</body>
+</html>
