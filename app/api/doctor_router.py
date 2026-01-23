@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import APIRouter, File, Form, UploadFile
-from core.schema.doctor_schema import DoctorCreate, DoctorListResponse, DoctorLogin, DoctorProfileResponse, DoctorResponse
+from core.repository.doctor_repository import get_doctor_profile_picture_service
+from core.schema.doctor_schema import DoctorCreate, DoctorListResponse, DoctorLogin, DoctorProfilePicResponse, DoctorProfileResponse, DoctorResponse
 from core.services.doctor_service import (
     doctor_profile_picture_update_service,
     doctor_signup_service,
@@ -72,6 +73,14 @@ async def view_doctors_list():
     """
     return await get_doctors_list_service()
 
+@doctor_router.get(
+    "/profile-picture/{doctor_id}",
+    response_model=DoctorProfilePicResponse
+)
+async def get_doctor_profile_picture(doctor_id: int):
+    return await get_doctor_profile_picture_service(doctor_id)
+
+
 @doctor_router.post("/logout/{doctor_id}")
 async def doctor_logout(doctor_id: int):
     """
@@ -79,3 +88,4 @@ async def doctor_logout(doctor_id: int):
     - Deactivate session
     """
     return await doctor_logout_service(doctor_id)
+

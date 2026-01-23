@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form
-from core.schema.patient_schema import PatientCreate, PatientLogin, PatientResponse
+from core.schema.patient_schema import PatientCreate, PatientLogin, PatientProfilePicResponse, PatientResponse
 from core.services.patient_service import (
+    get_patient_profile_picture_service,
     patient_profile_picture_update_service,
     patient_signup_service,
     patient_signin_service,
@@ -39,11 +40,17 @@ async def update_patient_picture(
         patient_id, profile_picture
     )
 
-
-
 @patient_router.post("/signin", response_model=PatientResponse)
 async def patient_signin(login: PatientLogin):
     return await patient_signin_service(login.email, login.phone_number)
+
+@patient_router.get(
+    "/profile-picture/{patient_id}",
+    response_model=PatientProfilePicResponse
+)
+async def get_patient_profile_picture(patient_id: int):
+    return await get_patient_profile_picture_service(patient_id)
+
 
 @patient_router.post("/logout/{patient_id}")
 async def patient_logout(patient_id: int):

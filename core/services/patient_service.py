@@ -4,6 +4,7 @@ from core.repository.patient_repository import (
     get_patient_by_email_or_phone,
     create_patient,
     get_patient_by_id,
+    get_patient_profile_picture_repo,
     login_patient,
     update_patient_profile_picture,
     logout_patient,
@@ -71,6 +72,20 @@ async def patient_signin_service(email: str, phone_number: str):
             detail="Invalid email or phone number",
         )
     return patient
+
+async def get_patient_profile_picture_service(patient_id: int):
+    profile_pic = await get_patient_profile_picture_repo(patient_id)
+
+    if profile_pic is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient not found"
+        )
+
+    return {
+        "profile_picture": profile_pic
+    }
+
 
 async def patient_logout_service(patient_id: int):
     patient = await get_patient_by_id(patient_id)

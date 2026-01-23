@@ -1,3 +1,4 @@
+from fastapi import HTTPException,status
 from sqlalchemy import select, or_
 from core.configs.database import get_db_connection
 from core.model.doctor_model import Doctor
@@ -64,6 +65,25 @@ async def get_all_doctors():
             .order_by(Doctor.name)
         )
         return result.scalars().all()
+    
+from sqlalchemy import select
+
+async def get_doctor_profile_picture_service(doctor_id: int):
+    async for db in get_db_connection():
+
+        result = await db.execute(
+            select(Doctor.profile_picture).where(Doctor.doctor_id == doctor_id)
+        )
+        profile_pic = result.scalar_one_or_none()
+
+        if not profile_pic:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Doctor not found"
+            )
+
+        return {"profile_picture": profile_pic}
+
 
 async def logout_doctor(doctor_id: int):
     async for db in get_db_connection():

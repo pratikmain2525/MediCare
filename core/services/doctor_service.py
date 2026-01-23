@@ -98,6 +98,22 @@ async def get_doctors_list_service():
 
     return doctors
 
+from fastapi import HTTPException, status
+
+async def get_doctor_profile_picture_service(doctor_id: int):
+    doctor = await get_doctor_by_id(doctor_id)
+
+    if not doctor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Doctor not found"
+        )
+
+    return {
+        "profile_picture": doctor.profile_picture
+    }
+
+
 async def doctor_logout_service(doctor_id: int):
     doctor = await get_doctor_by_id(doctor_id)
     if not doctor:

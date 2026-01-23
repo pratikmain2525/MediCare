@@ -29,4 +29,5 @@ class PatientResponse(BaseModel):
     class Config:
         from_attributes = True
 
-
+class PatientProfilePicResponse(BaseModel):
+    profile_picture: str | None

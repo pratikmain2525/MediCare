@@ -46,3 +46,8 @@ class DoctorListResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+from pydantic import BaseModel
+
+class DoctorProfilePicResponse(BaseModel):
+    profile_picture: str | None   # URL or file path
