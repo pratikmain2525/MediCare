@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Consultation Form - MediCare</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --bg: #f0fdf4;
+            --text: #064e3b;
+            --white: #ffffff;
+            --border: #d1fae5;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #064e3b;
+            color: #f0fdf4;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #065f46;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .nav-links {
+            flex: 1;
+            padding: 1.5rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #f0fdf4;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: #065f46;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: #fca5a5;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+        }
+
+        .step-indicators {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            transition: background 0.3s;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            padding: 0.5rem 0;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .radio-item input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border: 1px solid var(--border);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        #msg {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Payment Step Refinements */
+        .payment-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1.5rem;
+        }
+
+        .payment-left {
+            flex: 1;
+            text-align: center;
+        }
+
+        .payment-right {
+            flex: 1;
+            border-left: 1px solid #e2e8f0;
+            padding-left: 20px;
+        }
+
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .consent-section {
+            margin: 1.5rem 0;
+            font-size: 0.75rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .consent-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+        }
+
+        .consent-checkbox input {
+            width: auto;
+        }
+
+        .btn-submit-appointment {
+            background: #10b981;
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 999px;
+            font-size: 1.125rem;
+        }
+    </style>
+</head>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h2>MediCare</h2>
+    </div>
+    <ul class="nav-links">
+        <li class="nav-item"><a href="/patient/profile" class="nav-link">My Profile</a></li>
+        <li class="nav-item"><a href="/patient/doctors" class="nav-link active">Find Doctors</a></li>
+        <li class="nav-item"><a href="/patient/prescriptions" class="nav-link">My Prescriptions</a></li>
+    </ul>
+    <div style="padding: 1.5rem;"><button class="logout-btn" onclick="logout()">Logout</button></div>
+</aside>
+
+<main class="main-content">
+    <div class="form-card">
+        <div class="step-indicators">
+            <div class="step-dot active" id="dot1"></div>
+            <div class="step-dot" id="dot2"></div>
+            <div class="step-dot" id="dot3"></div>
+        </div>
+
+        <form id="consultationForm">
+            <!-- Step 1 -->
+            <div class="form-step active" id="step1">
+                <h1>Medical Details</h1>
+                <div class="group">
+                    <label>Current Illness History</label>
+                    <textarea id="current_illness_history" rows="3" placeholder="Describe your symptoms..."></textarea>
+                </div>
+                <div class="group">
+                    <label>Recent Surgery (Mention Time Span)</label>
+                    <input type="text" id="recent_surgery" placeholder="e.g. Heart surgery - 2 months ago">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="window.location.href='/patient/doctors'">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="form-step" id="step2">
+                <h1>Family History</h1>
+                <div class="group">
+                    <label>Diabetes Status</label>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="diabetics_status" value="Diabetics">
+                            Diabetics</label>
+                        <label class="radio-item"><input type="radio" name="diabetics_status" value="Non-Diabetics"
+                                checked> Non-Diabetics</label>
+                    </div>
+                </div>
+                <div class="group">
+                    <label>Any Allergies</label>
+                    <input type="text" id="allergies" placeholder="e.g. Peanuts, Penicillin">
+                </div>
+                <div class="group">
+                    <label>Others</label>
+                    <input type="text" id="others" placeholder="Internal medical issues">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="form-step" id="step3">
+                <h1>Payment</h1>
+
+                <div class="payment-container">
+                    <div class="payment-left">
+                        <p style="font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem;">Scan and Pay using UPI
+                            App</p>
+                        <div class="qr-code">
+                            <img id="upi-qr"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MediCare-Consultation"
+                                alt="QR Code">
+                        </div>
+                        <p style="font-size: 0.875rem; margin: 10px 0;">or</p>
+                        <p style="font-size: 0.875rem; font-weight: 600;">UPI ID: <span id="doctor-upi-id"
+                                style="color: var(--primary);">doctor@icici</span></p>
+                    </div>
+
+                    <div class="payment-right">
+                        <p style="font-size: 0.75rem; color: #64748b;">Pay Using Any App</p>
+                        <div class="price-tag">₹ 600</div>
+                        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 1rem;">(After Payment)</p>
+                    </div>
+                </div>
+
+                <div class="consent-section">
+                    <p style="font-weight: 700; color: #475569; margin-bottom: 5px;">CONSENT FOR ONLINE CONSULTATION</p>
+                    <p>I HAVE UNDERSTOOD THAT THIS IS AN ONLINE CONSULTATION WITHOUT A PHYSICAL CHECKUP OF MY SYMPTOMS.
+                        THE DOCTOR HENCE RELIES ON MY DESCRIPTION OF THE PROBLEM OR SCANNED REPORTS PROVIDED BY ME. WITH
+                        THIS UNDERSTANDING, I HEREBY GIVE MY CONSENT FOR ONLINE CONSULTATION.</p>
+                    <label class="consent-checkbox">
+                        <input type="checkbox" id="consent_check" required> YES, I ACCEPT
+                    </label>
+                </div>
+
+                <div id="msg"></div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                    <button type="submit" class="btn btn-submit-appointment">Submit Appointment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const doctor_id = params.get('doctor_id');
+        const patient_id = localStorage.getItem('patient_id');
+
+        if (!doctor_id || !patient_id) window.location.href = '/patient/doctors';
+
+        async function fetchDoctor() {
+            try {
+                const res = await fetch(`/doctor/profile/${doctor_id}`);
+                if (res.ok) {
+                    const doc = await res.json();
+                    const sanitizedName = doc.name.toLowerCase().replace(/\s+/g, '');
+                    const upiId = `${sanitizedName}@bankname`;
+                    document.getElementById('doctor-upi-id').innerText = upiId;
+
+                    // Update QR code with dynamic UPI data if needed
+                    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${upiId}&pn=${encodeURIComponent(doc.name)}&am=600&cu=INR`;
+                    document.getElementById('upi-qr').src = qrUrl;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        fetchDoctor();
+
+        function nextStep(n) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+
+            for (let i = 1; i <= n; i++) document.getElementById('dot' + i).classList.add('active');
+        }
+
+        function prevStep(n) {
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.step-dot').forEach((d, idx) => {
+                if (idx + 1 > n) d.classList.remove('active');
+            });
+            document.getElementById('step' + n).classList.add('active');
+        }
+
+        document.getElementById('consultationForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('msg');
+            msg.style.display = 'block';
+            msg.innerText = 'Submitting...';
+            msg.className = '';
+
+            const data = {
+                doctor_id: parseInt(doctor_id),
+                patient_id: parseInt(patient_id),
+                current_illness_history: document.getElementById('current_illness_history').value,
+                recent_surgery: document.getElementById('recent_surgery').value,
+                diabetics_status: document.querySelector('input[name="diabetics_status"]:checked').value,
+                allergies: document.getElementById('allergies').value,
+                others: document.getElementById('others').value
+            };
+
+            try {
+                const res = await fetch('/consultation/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    msg.innerText = 'Consultation submitted! Redirecting...';
+                    msg.className = 'success';
+                    setTimeout(() => window.location.href = '/patient/doctors', 2000);
+                } else {
+                    msg.innerText = 'Error: ' + (result.detail || 'Submission failed');
+                    msg.className = 'error';
+                }
+            } catch (err) {
+                msg.innerText = 'Server error';
+                msg.className = 'error';
+            }
+        };
+    </script>
+    </body>
+
+</html>

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr,Field
 from typing import Optional
 
 
@@ -7,7 +7,7 @@ class DoctorCreate(BaseModel):
     name: str
     specialty: str
     email: EmailStr
-    phone_number: str
+    phone_number: str = Field(..., pattern=r"^[0-9]{10}$")
     years_of_experience: float
 
 
@@ -32,6 +32,8 @@ class DoctorProfileResponse(BaseModel):
     doctor_id: int
     name: str
     specialty: str
+    email: EmailStr
+    phone_number: str
     years_of_experience: float
     profile_picture: Optional[str]
 

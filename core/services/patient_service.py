@@ -11,8 +11,10 @@ from core.repository.patient_repository import (
 )
 
 from core.configs.utils import save_profile_picture
+from core.configs.settings import get_config
 
-PATIENT_PATH = r"D:\project\MediCare\storeg\static\uploads\patient"
+settings = get_config()
+PATIENT_PATH = settings.BASE_STATIC_PATH
 
 
 async def patient_signup_service(
@@ -97,3 +99,12 @@ async def patient_logout_service(patient_id: int):
     
     result = await logout_patient(patient_id)
     return {"message": "Patient logged out successfully", "patient_id": patient_id}
+
+async def get_patient_profile_service(patient_id: int):
+    patient = await get_patient_by_id(patient_id)
+    if not patient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient not found"
+        )
+    return patient

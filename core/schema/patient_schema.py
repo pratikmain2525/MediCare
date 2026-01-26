@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 
 class PatientCreate(BaseModel):
@@ -6,7 +6,7 @@ class PatientCreate(BaseModel):
     name: str
     age: int
     email: EmailStr
-    phone_number: str
+    phone_number: str = Field(..., pattern=r"^[0-9]{10}$")
     history_of_surgery: Optional[str]=None
     history_of_illness: Optional[str]=None
 

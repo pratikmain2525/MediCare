@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare - Select Portal</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #059669;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #e2e8f0;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .portal-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: #fdfdfd;
+            border: 1px solid #f1f5f9;
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 1.25rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .btn-signin-doctor {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-signup-doctor {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-signin-patient {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-signup-patient {
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            background: transparent;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>MediCare Portal</h1>
+
+        <div class="portal-section">
+            <h3>Doctor Access</h3>
+            <div class="button-group">
+                <a href="/doctor/signin" class="btn btn-signin-doctor">Sign In</a>
+                <a href="/doctor/signup" class="btn btn-signup-doctor">Sign Up</a>
+            </div>
+        </div>
+
+        <div class="portal-section" style="margin-bottom: 0;">
+            <h3>Patient Access</h3>
+            <div class="button-group">
+                <a href="/patient/signin" class="btn btn-signin-patient">Sign In</a>
+                <a href="/patient/signup" class="btn btn-signup-patient">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

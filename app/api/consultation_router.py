@@ -5,7 +5,8 @@ from core.schema.consultation_schema import ConsultationCreate
 from core.services.consultation_service import (
     consultation_create_service,
     get_doctor_consultations_service,
-    get_patient_consultations_service
+    get_patient_consultations_service,
+    get_consultation_by_id_service
 )
 
 consultation_router = APIRouter(prefix="/consultation", tags=["Consultation"])
@@ -32,3 +33,10 @@ async def get_patient_consultations_endpoint(patient_id: int):
     Patient can view their consultation history
     """
     return await get_patient_consultations_service(patient_id)
+
+@consultation_router.get("/{consultation_id}")
+async def get_consultation_endpoint(consultation_id: int):
+    """
+    Get details of a single consultation
+    """
+    return await get_consultation_by_id_service(consultation_id)

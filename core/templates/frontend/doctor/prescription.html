@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Form - MediCare</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #f8fafc;
+            --sidebar-hover: #334155;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--sidebar-hover);
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .nav-links {
+            flex: 1;
+            padding: 1.5rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 1.75rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #475569;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: #cbd5e1;
+            color: var(--text);
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .pdf-preview {
+            margin-top: 2rem;
+            border-top: 2px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .pdf-preview h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        #msg {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            text-align: center;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>MediCare</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/doctor/profile" class="nav-link">Profile</a></li>
+            <li class="nav-item"><a href="/doctor/consultations" class="nav-link active">My Consultations</a></li>
+        </ul>
+        <div style="padding: 1.5rem;"><button class="logout-btn" onclick="logout()">Logout</button></div>
+    </aside>
+
+    <main class="main-content">
+        <h1 id="page-title">Prescription Form</h1>
+        <div id="msg"></div>
+        <div class="card">
+            <form id="prescriptionForm">
+                <input type="hidden" id="prescription_id">
+                <div class="form-group">
+                    <label>Care to be Taken</label>
+                    <textarea id="care_to_be_taken" rows="4" required
+                        placeholder="Rest for 3 days, drink plenty of water..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Medicines</label>
+                    <textarea id="medicines" rows="6" placeholder="Paracetamol 500mg - 1-0-1..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Save Prescription</button>
+                    <a href="/doctor/consultations" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+
+        <div id="pdf-section" class="pdf-preview" style="display: none;">
+            <h2>Prescription PDF Preview</h2>
+            <iframe id="pdf-frame" src=""></iframe>
+            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                <button class="btn btn-primary" onclick="window.open(document.getElementById('pdf-frame').src)">Download
+                    PDF</button>
+                <button class="btn btn-primary" style="background-color: #10b981;" onclick="sendToPatient()">Send to
+                    Patient</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const consultation_id = params.get('consultation_id');
+        const doctor_id = localStorage.getItem('doctor_id');
+
+        if (!consultation_id || !doctor_id) window.location.href = '/doctor/consultations';
+
+        async function init() {
+            try {
+                // Fetch consultation details
+                const cRes = await fetch(`/consultation/${consultation_id}`);
+                const cData = await cRes.json();
+                if (cRes.ok) {
+                    const detailHtml = `
+                        <div style="background:#f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                            <h2 style="font-size: 1.1rem; margin-top:0;">Patient Information</h2>
+                            <p><strong>Patient:</strong> ${cData.patient.name}</p>
+                            <p><strong>Illness History:</strong> ${cData.current_illness_history || 'N/A'}</p>
+                            <p><strong>Recent Surgery:</strong> ${cData.recent_surgery || 'None'} (${cData.surgery_time_span || 'N/A'})</p>
+                            <p><strong>Diabetes Status:</strong> ${cData.diabetics_status || 'N/A'}</p>
+                            <p><strong>Allergies:</strong> ${cData.allergies || 'None'}</p>
+                            <p><strong>Others:</strong> ${cData.others || 'None'}</p>
+                            <p><strong>Transaction ID:</strong> ${cData.transaction_id || 'N/A'}</p>
+                        </div>
+                    `;
+                    document.getElementById('prescriptionForm').insertAdjacentHTML('beforebegin', detailHtml);
+                }
+
+                // Check if prescription already exists
+                const res = await fetch(`/prescription/consultation/${consultation_id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) {
+                        document.getElementById('prescription_id').value = data.prescription_id;
+                        document.getElementById('care_to_be_taken').value = data.care_to_be_taken;
+                        document.getElementById('medicines').value = data.medicines;
+                        document.getElementById('page-title').innerText = 'Edit Prescription';
+                        document.getElementById('submitBtn').innerText = 'Update Prescription';
+                        if (data.pdf_path) {
+                            showPDF(data.pdf_path);
+                        }
+                    }
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function showPDF(path) {
+            const frame = document.getElementById('pdf-frame');
+            // path is 'static/prescription_pdf/prescription_1.pdf'
+            frame.src = '/' + path;
+            document.getElementById('pdf-section').style.display = 'block';
+        }
+
+        async function sendToPatient() {
+            const msg = document.getElementById('msg');
+            msg.style.display = 'block';
+            msg.innerText = 'Sending prescription to patient...';
+            msg.className = 'success';
+
+            // Placeholder for actual sending logic
+            setTimeout(() => {
+                alert('Prescription sent successfully to the patient!');
+                msg.innerText = 'Prescription sent!';
+            }, 1000);
+        }
+
+        document.getElementById('prescriptionForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('msg');
+            const p_id = document.getElementById('prescription_id').value;
+            const care = document.getElementById('care_to_be_taken').value;
+            const medicines = document.getElementById('medicines').value;
+
+            msg.style.display = 'block';
+            msg.innerText = 'Saving...';
+            msg.className = '';
+
+            const url = p_id ? `/prescription/${p_id}` : '/prescription/';
+            const method = p_id ? 'PUT' : 'POST';
+            const body = {
+                consultation_id: parseInt(consultation_id),
+                care_to_be_taken: care,
+                medicines: medicines
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    msg.innerText = 'Success! PDF generated.';
+                    msg.className = 'success';
+                    document.getElementById('prescription_id').value = data.prescription_id;
+                    showPDF(data.pdf_path);
+                } else {
+                    msg.innerText = 'Error: ' + (data.detail || 'Failed to save');
+                    msg.className = 'error';
+                }
+            } catch (err) {
+                msg.innerText = 'Server error';
+                msg.className = 'error';
+            }
+        };
+
+        function logout() {
+            localStorage.removeItem('doctor_id');
+            window.location.href = '/doctor/signin';
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

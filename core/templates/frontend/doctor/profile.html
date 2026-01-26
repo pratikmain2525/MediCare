@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - MediCare</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #f8fafc;
+            --sidebar-hover: #334155;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--sidebar-hover);
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .nav-links {
+            flex: 1;
+            padding: 1.5rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-pic-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .edit-overlay {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .edit-overlay:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .profile-info p {
+            margin: 0.5rem 0;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .info-item span {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .loader {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>MediCare</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/doctor/profile" class="nav-link active">Profile</a></li>
+            <li class="nav-item"><a href="/doctor/consultations" class="nav-link">My Consultations</a></li>
+        </ul>
+        <div style="padding: 1.5rem;"><button class="logout-btn" onclick="logout()">Logout</button></div>
+    </aside>
+
+    <main class="main-content">
+        <div id="loader" class="loader">Loading profile...</div>
+        <div id="content" class="card" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-pic-container">
+                    <img id="doctor-pic" src="" alt="Profile" class="profile-pic">
+                    <label for="pic-input" class="edit-overlay" title="Update Profile Picture">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </label>
+                    <input type="file" id="pic-input" accept="image/*" style="display: none;"
+                        onchange="updateProfilePicture()">
+                </div>
+                <div class="profile-info">
+                    <h1 id="doctor-name"></h1>
+                    <p id="doctor-specialty" style="color: #64748b; font-size: 1.1rem; margin-top: 0.25rem;"></p>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item"><label>Email</label><span id="doctor-email"></span></div>
+                <div class="info-item"><label>Phone</label><span id="doctor-phone"></span></div>
+                <div class="info-item"><label>Experience</label><span id="doctor-exp"></span> Years</div>
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: center;">
+                <a href="/doctor/consultations" class="nav-link"
+                    style="background: var(--primary); color: white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600;">Go
+                    to Prescription Page (Consultations)</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const doctor_id = localStorage.getItem('doctor_id');
+        if (!doctor_id) window.location.href = '/doctor/signin';
+
+        async function loadProfile() {
+            document.getElementById('loader').style.display = 'block';
+            try {
+                const res = await fetch(`/doctor/profile/${doctor_id}`);
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('doctor-name').innerText = data.name;
+                    document.getElementById('doctor-specialty').innerText = data.specialty;
+                    document.getElementById('doctor-email').innerText = data.email;
+                    document.getElementById('doctor-phone').innerText = data.phone_number;
+                    document.getElementById('doctor-exp').innerText = data.years_of_experience;
+                    // Prepend /static/ to the relative path
+                    document.getElementById('doctor-pic').src = data.profile_picture ? `/static/${data.profile_picture}` : 'https://via.placeholder.com/120';
+                    document.getElementById('content').style.display = 'block';
+                }
+            } catch (err) { console.error(err); }
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        async function updateProfilePicture() {
+            const fileInput = document.getElementById('pic-input');
+            if (fileInput.files.length === 0) return;
+
+            const loader = document.getElementById('loader');
+            loader.innerText = 'Uploading new picture...';
+            loader.style.display = 'block';
+            document.getElementById('content').style.opacity = '0.5';
+
+            const formData = new FormData();
+            formData.append('profile_picture', fileInput.files[0]);
+
+            try {
+                const res = await fetch(`/doctor/profile-picture/${doctor_id}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                if (res.ok) {
+                    location.reload(); // Refresh to show new picture
+                } else {
+                    alert('Failed to update picture');
+                    loader.style.display = 'none';
+                    document.getElementById('content').style.opacity = '1';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error during upload');
+                loader.style.display = 'none';
+                document.getElementById('content').style.opacity = '1';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('doctor_id');
+            window.location.href = '/doctor/signin';
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

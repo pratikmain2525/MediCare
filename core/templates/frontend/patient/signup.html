@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Signup - MediCare</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --bg: #f0fdf4;
+            --text: #064e3b;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1fae5;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 60px;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .msg {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #065f46;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Patient Register</h1>
+        <form id="signupForm">
+            <div class="group"><label>Name</label><input type="text" name="name" required></div>
+            <div class="group"><label>Age</label><input type="number" name="age" required></div>
+            <div class="group"><label>Email</label><input type="email" name="email" required></div>
+            <div class="group"><label>Phone</label><input type="tel" name="phone_number" required minlength="10"
+                    maxlength="10" pattern="[0-9]{10}" title="Please enter exactly 10 digits"></div>
+            <div class="group"><label>Surgery History</label><textarea name="history_of_surgery"></textarea></div>
+            <div class="group"><label>Illness History</label><textarea name="history_of_illness"></textarea></div>
+            <div class="group"><label>Profile Pic</label><input type="file" name="profile_picture" accept="image/*">
+            </div>
+            <button type="submit">Complete Signup</button>
+        </form>
+        <div id="msg" class="msg"></div>
+        <div class="footer">
+            Already have an account? <a href="/patient/signin">Sign in</a><br><br>
+            <a href="/"
+                style="color: #065f46; border: 1px solid #a7f3d0; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; text-decoration: none;">←
+                Back to Home</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('signupForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('msg');
+            msg.style.display = 'block'; msg.innerText = 'Processing...'; msg.className = 'msg';
+            try {
+                const res = await fetch('/patient/signup', { method: 'POST', body: new FormData(e.target) });
+                const data = await res.json();
+                if (res.ok) {
+                    msg.innerText = 'Registered successfully!'; msg.classList.add('success');
+                    setTimeout(() => window.location.href = '/patient/signin', 2000);
+                } else {
+                    if (data.errors) {
+                        msg.innerHTML = `<strong>Validation Error:</strong><ul style="margin: 5px 0 0 20px; padding: 0;">${data.errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
+                    } else {
+                        msg.innerText = data.detail || 'Signup failed';
+                    }
+                    msg.classList.add('error');
+                }
+            } catch (err) {
+                msg.innerText = 'Server error'; msg.classList.add('error');
+            }
+        };
+    </script>
+</body>
+
+</html>

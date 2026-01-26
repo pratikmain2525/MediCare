@@ -103,3 +103,12 @@ async def get_prescriptions_by_patient(patient_id: int):
             .order_by(Prescription.created_at.desc())
         )
         return result.scalars().all()
+
+async def get_prescription_by_consultation_id(consultation_id: int):
+    """Get a prescription by its consultation ID"""
+    async for db in get_db_connection():
+        result = await db.execute(
+            select(Prescription)
+            .where(Prescription.consultation_id == consultation_id)
+        )
+        return result.scalar_one_or_none()

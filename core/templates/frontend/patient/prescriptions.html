@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Prescriptions - MediCare</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --bg: #f0fdf4;
+            --text: #064e3b;
+            --white: #ffffff;
+            --border: #d1fae5;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #064e3b;
+            color: #f0fdf4;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #065f46;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .nav-links {
+            flex: 1;
+            padding: 1.5rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #f0fdf4;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: #065f46;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: #fca5a5;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+
+
+        .prescription-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .prescription-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-info h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+        }
+
+        .doctor-info p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .view-btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 4rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px dashed var(--border);
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>MediCare</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/patient/profile" class="nav-link">My Profile</a></li>
+            <li class="nav-item"><a href="/patient/doctors" class="nav-link">Find Doctors</a></li>
+            <li class="nav-item"><a href="/patient/prescriptions" class="nav-link active">My Prescriptions</a></li>
+        </ul>
+        <div style="padding: 1.5rem;"><button class="logout-btn" onclick="logout()">Logout</button></div>
+    </aside>
+
+    <main class="main-content">
+        <h1 style="margin-bottom: 2rem;">My Prescriptions</h1>
+        <div id="prescription-container" class="prescription-list">
+            <div class="no-data">Checking for prescriptions...</div>
+        </div>
+    </main>
+
+    <script>
+        const patient_id = localStorage.getItem('patient_id');
+        if (!patient_id) window.location.href = '/patient/signin';
+
+        async function fetchPrescriptions() {
+            try {
+                // Fetch from the patient endpoint in patient_router
+                const res = await fetch(`/patient/prescriptions/${patient_id}`);
+                const data = await res.json();
+                const container = document.getElementById('prescription-container');
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="no-data">No prescriptions issued yet.</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'prescription-card';
+                    // The backend returns Prescription objects which have a .consultation.doctor object because of selectinload
+                    const doctorName = p.consultation.doctor.name;
+                    const date = new Date(p.created_at).toLocaleDateString();
+
+                    card.innerHTML = `
+                        <div class="doctor-info">
+                            <h3>Dr. ${doctorName}</h3>
+                            <p>Issued on: ${date}</p>
+                        </div>
+                        <a href="/${p.pdf_path}" target="_blank" class="view-btn">View Prescription PDF</a>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('prescription-container').innerHTML = '<div class="no-data" style="color:red">Error loading prescriptions.</div>';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('patient_id');
+            window.location.href = '/patient/signin';
+        }
+
+        fetchPrescriptions();
+    </script>
+</body>
+
+</html>

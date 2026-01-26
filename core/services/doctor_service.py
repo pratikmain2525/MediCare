@@ -11,8 +11,10 @@ from core.repository.doctor_repository import (
 )
 
 from core.configs.utils import save_profile_picture
+from core.configs.settings import get_config
 
-DOCTOR_PATH = r"D:\project\MediCare\storeg\static\uploads\doctors"
+settings = get_config()
+DOCTOR_PATH = settings.BASE_STATIC_PATH
 
 
 async def doctor_signup_service(
@@ -26,6 +28,7 @@ async def doctor_signup_service(
 
     # 2️⃣ Create doctor WITHOUT profile picture first
     data = doctor.model_dump()
+    data["name"] = f"Dr. {data['name']}" if not data["name"].startswith("Dr. ") else data["name"]
     data["profile_picture"] = None
     created_doctor = await create_doctor(data)
 
@@ -89,16 +92,7 @@ async def get_doctor_profile_service(doctor_id: int):
 
 async def get_doctors_list_service():
     doctors = await get_all_doctors()
-
-    if not doctors:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No doctors available"
-        )
-
-    return doctors
-
-from fastapi import HTTPException, status
+    return doctors or []
 
 async def get_doctor_profile_picture_service(doctor_id: int):
     doctor = await get_doctor_by_id(doctor_id)

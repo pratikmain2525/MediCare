@@ -8,7 +8,17 @@ from app.api.payment_router import payment_router
 # from core.configs.database import init_db
 
 
+import os
+from fastapi.staticfiles import StaticFiles
+
+from core.templates.frontend.frontend_router import frontend_router
+
 app = FastAPI(title="MediCare")
+
+# --- Static Storage ---
+# Mounting the storeg/static folder to /static URL
+BASE_STATIC_PATH = os.getenv("BASE_STATIC_PATH")
+app.mount("/static", StaticFiles(directory=BASE_STATIC_PATH), name="static")
 
 # --- CORS Setup ---
 origins = [
@@ -24,6 +34,7 @@ app.add_middleware(
 )
 
 # --- Include Routers ---
+app.include_router(frontend_router) # Frontend routes first
 app.include_router(doctor_router)
 app.include_router(patient_router)
 app.include_router(consultation_router)

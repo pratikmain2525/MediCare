@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Sign-in - MediCare</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --bg: #f0fdf4;
+            --text: #064e3b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #d1fae5;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #065f46;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .msg {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            display: none;
+            text-align: center;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #065f46;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Patient Sign-in</h1>
+        <form id="signinForm">
+            <div class="group"><label>Email</label><input type="email" id="email" placeholder="patient@example.com"
+                    required></div>
+            <div class="group"><label>Phone Number</label><input type="tel" id="phone_number" placeholder="+1234567890"
+                    required></div>
+            <button type="submit">Sign In</button>
+        </form>
+        <div id="msg" class="msg"></div>
+        <div class="footer">
+            Don't have an account? <a href="/patient/signup">Sign up</a><br><br>
+            <a href="/"
+                style="color: #065f46; border: 1px solid #a7f3d0; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; text-decoration: none;">←
+                Back to Home</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('signinForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const phone_number = document.getElementById('phone_number').value;
+            const msg = document.getElementById('msg');
+
+            msg.style.display = 'block';
+            msg.innerText = 'Signing in...';
+            msg.className = 'msg';
+
+            try {
+                const res = await fetch('/patient/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, phone_number })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    msg.innerText = 'Login successful! Redirecting...';
+                    msg.classList.add('success');
+                    localStorage.setItem('patient_id', data.patient_id);
+                    setTimeout(() => window.location.href = '/patient/doctors', 2000);
+                } else {
+                    msg.innerText = data.detail || 'Sign-in failed';
+                    msg.classList.add('error');
+                }
+            } catch (err) {
+                msg.innerText = 'Server error';
+                msg.classList.add('error');
+            }
+        };
+    </script>
+</body>
+
+</html>

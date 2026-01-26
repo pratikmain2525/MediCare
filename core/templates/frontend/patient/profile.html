@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - MediCare</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-dark: #047857;
+            --bg: #f0fdf4;
+            --text: #064e3b;
+            --white: #ffffff;
+            --border: #d1fae5;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #064e3b;
+            color: #f0fdf4;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #065f46;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .nav-links {
+            flex: 1;
+            padding: 1.5rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #f0fdf4;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: #065f46;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: #fca5a5;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+
+
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-pic-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .edit-overlay {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid var(--white);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .edit-overlay:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .info-item span {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .panel {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .panel h2 {
+            font-size: 1rem;
+            margin-top: 0;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 0.5rem;
+        }
+
+        .tag {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .loader {
+            text-align: center;
+            padding: 4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>MediCare</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/patient/profile" class="nav-link active">My Profile</a></li>
+            <li class="nav-item"><a href="/patient/doctors" class="nav-link">Find Doctors</a></li>
+            <li class="nav-item"><a href="/patient/prescriptions" class="nav-link">My Prescriptions</a></li>
+        </ul>
+        <div style="padding: 1.5rem;"><button class="logout-btn" onclick="logout()">Logout</button></div>
+    </aside>
+
+    <main class="main-content">
+        <div id="loader" class="loader">Loading your profile...</div>
+
+        <div id="content" class="card" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-pic-container">
+                    <img id="patient-pic" src="" alt="Profile" class="profile-pic">
+                    <label for="pic-input" class="edit-overlay" title="Update Profile Picture">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </label>
+                    <input type="file" id="pic-input" accept="image/*" style="display: none;"
+                        onchange="updateProfilePicture()">
+                </div>
+                <div class="profile-info">
+                    <h1 id="patient-name" style="margin:0; font-size: 2rem;"></h1>
+                    <p id="patient-email" style="margin: 0.25rem 0; color: #64748b;"></p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item"><label>Age</label><span id="patient-age"></span></div>
+                <div class="info-item"><label>Phone</label><span id="patient-phone"></span></div>
+            </div>
+
+            <div class="panel">
+                <h2>History of Surgery</h2>
+                <p id="surgery-history" style="margin-bottom: 0;"></p>
+            </div>
+
+            <div class="panel">
+                <h2>History of Illness</h2>
+                <div id="illness-tags" class="tag-container"></div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <script>
+        const patient_id = localStorage.getItem('patient_id');
+        if (!patient_id) window.location.href = '/patient/signin';
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(`/patient/profile/${patient_id}`);
+                const data = await res.json();
+
+                if (res.ok) {
+                    document.getElementById('patient-name').innerText = data.name;
+                    document.getElementById('patient-email').innerText = data.email;
+                    document.getElementById('patient-age').innerText = data.age;
+                    document.getElementById('patient-phone').innerText = data.phone_number;
+                    document.getElementById('surgery-history').innerText = data.history_of_surgery || 'None reported';
+
+                    // Set image src with /static/ prefix
+                    document.getElementById('patient-pic').src = data.profile_picture ? `/static/${data.profile_picture}` : 'https://via.placeholder.com/120';
+
+                    const tags = document.getElementById('illness-tags');
+                    if (data.history_of_illness) {
+                        data.history_of_illness.split(',').forEach(item => {
+                            if (item.trim()) {
+                                const span = document.createElement('span');
+                                span.className = 'tag';
+                                span.innerText = item.trim();
+                                tags.appendChild(span);
+                            }
+                        });
+                    } else {
+                        tags.innerHTML = '<span style="color: #64748b;">No illness history reported.</span>';
+                    }
+
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loader').innerText = 'Error loading profile.';
+            }
+        }
+
+        async function updateProfilePicture() {
+            const fileInput = document.getElementById('pic-input');
+            if (fileInput.files.length === 0) return;
+
+            const loader = document.getElementById('loader');
+            loader.innerText = 'Uploading new picture...';
+            loader.style.display = 'block';
+            document.getElementById('content').style.opacity = '0.5';
+
+            const formData = new FormData();
+            formData.append('profile_picture', fileInput.files[0]);
+
+            try {
+                const res = await fetch(`/patient/profile-picture/${patient_id}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                if (res.ok) {
+                    location.reload(); // Refresh to show new picture
+                } else {
+                    alert('Failed to update picture');
+                    loader.style.display = 'none';
+                    document.getElementById('content').style.opacity = '1';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Server error during upload');
+                loader.style.display = 'none';
+                document.getElementById('content').style.opacity = '1';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('patient_id');
+            window.location.href = '/patient/signin';
+        }
+
+        loadProfile();
+    </script>
+</body>
+
+</html>

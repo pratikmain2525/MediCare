@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Doctors - MediCare</title>
+    <style>
+        :root {
+            --primary: #059669;
+            --bg: #f0fdf4;
+            --text: #064e3b;
+            --white: #ffffff;
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #064e3b;
+            color: #f0fdf4;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #065f46;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .nav-links {
+            flex: 1;
+            padding: 1.5rem 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #f0fdf4;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: #065f46;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            color: #fca5a5;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+
+
+        .doctor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .doctor-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            border: 1px solid #d1fae5;
+        }
+
+        .doctor-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid var(--primary);
+        }
+
+        .doctor-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .doctor-specialty {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .consult-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .consult-btn:hover {
+            opacity: 0.9;
+        }
+
+        .loader {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.125rem;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>MediCare</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/patient/profile" class="nav-link">My Profile</a></li>
+            <li class="nav-item"><a href="/patient/doctors" class="nav-link active">Find Doctors</a></li>
+            <li class="nav-item"><a href="/patient/prescriptions" class="nav-link">My Prescriptions</a></li>
+        </ul>
+        <div style="padding: 1.5rem;"><button class="logout-btn" onclick="logout()">Logout</button></div>
+    </aside>
+
+    <main class="main-content">
+        <h1 style="margin-bottom: 2rem;">Select a Doctor</h1>
+        <div id="loader" class="loader">Finding available doctors...</div>
+        <div id="doctor-grid" class="doctor-grid"></div>
+    </main>
+
+    <script>
+        const patient_id = localStorage.getItem('patient_id');
+        if (!patient_id) window.location.href = '/patient/signin';
+
+        async function fetchDoctors() {
+            try {
+                const res = await fetch('/doctor/doctors');
+                const doctors = await res.json();
+                const grid = document.getElementById('doctor-grid');
+                const loader = document.getElementById('loader');
+
+                loader.style.display = 'none';
+
+                if (!doctors || doctors.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No doctors available at the moment.</p>';
+                    return;
+                }
+
+                doctors.forEach(doc => {
+                    const card = document.createElement('div');
+                    card.className = 'doctor-card';
+                    // Use exact same logic for profile picture path as requested
+                    const picPath = doc.profile_picture ? `/static/${doc.profile_picture}` : 'https://via.placeholder.com/100';
+                    card.innerHTML = `
+                        <img src="${picPath}" class="doctor-img" alt="${doc.name}">
+                        <div class="doctor-name">${doc.name}</div>
+                        <div class="doctor-specialty">${doc.specialty}</div>
+                        <a href="/patient/consult?doctor_id=${doc.doctor_id}" class="consult-btn">Consult Now</a>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loader').innerText = 'Error loading doctors.';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('patient_id');
+            window.location.href = '/patient/signin';
+        }
+
+        fetchDoctors();
+    </script>
+</body>
+
+</html>

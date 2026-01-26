@@ -5,8 +5,10 @@ from core.services.patient_service import (
     patient_profile_picture_update_service,
     patient_signup_service,
     patient_signin_service,
-    patient_logout_service
+    patient_logout_service,
+    get_patient_profile_service
 )
+from core.services.prescription_service import get_patient_prescriptions_service
 
 patient_router = APIRouter(prefix="/patient", tags=["Patient"])
 
@@ -59,3 +61,19 @@ async def patient_logout(patient_id: int):
     - Deactivate session
     """
     return await patient_logout_service(patient_id)
+
+@patient_router.get("/profile/{patient_id}")
+async def patient_profile(patient_id: int):
+    """
+    Patient Profile Page:
+    - Name, Age, Email, Phone
+    - Medical History (Surgery/Illness)
+    """
+    return await get_patient_profile_service(patient_id)
+
+@patient_router.get("/prescriptions/{patient_id}")
+async def view_patient_prescriptions(patient_id: int):
+    """
+    Get all prescriptions for a patient
+    """
+    return await get_patient_prescriptions_service(patient_id)

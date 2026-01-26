@@ -21,8 +21,10 @@ def save_profile_picture(
     ext = file.filename.rsplit(".", 1)[-1].lower()
     filename = f"{entity}_{entity_id}.{ext}"
 
-    # Prepare directory
-    upload_dir = Path(base_path) / f"{entity}s"
+    # Prepare directory (base_path points to storeg/static)
+    subfolder = f"{entity}s"
+        
+    upload_dir = Path(base_path) / "uploads" / subfolder
     upload_dir.mkdir(parents=True, exist_ok=True)
 
     # Save file
@@ -31,7 +33,7 @@ def save_profile_picture(
         buffer.write(file.file.read())
 
     # Return relative path to store in DB
-    return f"uploads/{entity}s/{filename}"
+    return f"uploads/{subfolder}/{filename}"
 
 
 

@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     # Debug Mode
     DEBUG_MODE: bool = False
     
+    # Path Configuration
+    BASE_STATIC_PATH: str
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
